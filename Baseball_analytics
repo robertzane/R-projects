@@ -1,20 +1,19 @@
 #Data from Lahman's Database
 #Uses vlookup to incorporate player salary data from "Salary.csv"
+#OBP calculated in Excel as (H+BB+HBP)/(AB+BB+HBP+SF)
+#SLG calculated in Excel as ((H-(2B+3B+HR))+(2*2B)+(3*3B)+(4*HR))/AB
+#OPS calculated in Excel as OBP + SLG
+#WHIP calculated in Excel as (H+BB+HBP)/(IPouts/3)
+#ContactAvg calculated in Excel as (AB-SO)/AB
 
-batting <- read_csv("Batting.csv")
-batting$OBP <- (batting$H+batting$BB+batting$HBP)/(batting$AB+batting$BB+batting$HBP+batting$SF)
-batting$SLG <- ((batting$H-(batting$2B+batting$3B+batting$HR))+(2*batting$2B)+(3*batting$3B)+(4*batting$HR))/batting$AB
-batting$OPS <- batting$OBP+batting$SLG
+batting <- read_csv("Batting_Summary.csv")
+batting$College <- ifelse(batting$CollegeYN == "Y", 1, 0)
+pitching <- read_csv("Pitching_Summary.csv")
+pitching$College <- ifelse(pitching$CollegeYN == "Y", 1, 0)
+teams <- read_csv("Teams_Summary.csv")
 
-pitching <- read_csv("Pitching.csv")
-pitching$WHIP <- (pitching$H+pitching$BB+pitching$HBP)/(pitching$IPouts/3)
-
-teams <- read_csv("Teams.csv")
-teams$OBP <- (teams$H+teams$BB+teams$HBP)/(teams$AB+teams$BB+teams$HBP+teams$SF)
-teams$SLG <- ((teams$H-(teams$2B+teams$3B+teams$HR))+(2*teams$2B)+(3*teams$3B)+(4*teams$HR))/teams$AB
-teams$OPS <- teams$OBP+teams$SLG
-teams$ContactAvg <- (teams$AB-teams$SO)/teams$AB
 teams$OPSCA <- teams$OPS + teams$ContactAvg
+teams$BA <- teams$H/teams$AB
 
 Batting_test_SalaryOPS <- cor.test(batting$OPS,batting$Salary,method="pearson")
 Batting_test_SalaryOPS
