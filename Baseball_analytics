@@ -1,0 +1,38 @@
+#Data from Lahman's Database
+#Uses vlookup to incorporate player salary data from "Salary.csv"
+
+batting <- read_csv("Batting.csv")
+batting$OBP <- (batting$H+batting$BB+batting$HBP)/(batting$AB+batting$BB+batting$HBP+batting$SF)
+batting$SLG <- ((batting$H-(batting$2B+batting$3B+batting$HR))+(2*batting$2B)+(3*batting$3B)+(4*batting$HR))/batting$AB
+batting$OPS <- batting$OBP+batting$SLG
+
+pitching <- read_csv("Pitching.csv")
+pitching$WHIP <- (pitching$H+pitching$BB+pitching$HBP)/(pitching$IPouts/3)
+
+teams <- read_csv("Teams.csv")
+teams$OBP <- (teams$H+teams$BB+teams$HBP)/(teams$AB+teams$BB+teams$HBP+teams$SF)
+teams$SLG <- ((teams$H-(teams$2B+teams$3B+teams$HR))+(2*teams$2B)+(3*teams$3B)+(4*teams$HR))/teams$AB
+teams$OPS <- teams$OBP+teams$SLG
+teams$ContactAvg <- (teams$AB-teams$SO)/teams$AB
+teams$OPSCA <- teams$OPS + teams$ContactAvg
+
+Batting_test_SalaryOPS <- cor.test(batting$OPS,batting$Salary,method="pearson")
+Batting_test_SalaryOPS
+
+batting_model <- lm(OPS ~ College, data=batting)
+summary(batting_model)
+
+Pitching_test_SalaryWHIP <- cor.test(pitching$WHIP,pitching$Salary,method="pearson")
+Pitching_test_SalaryWHIP
+
+pitching_model <- lm(WHIP ~ College, data=pitching)
+summary(pitching_model)
+
+Teams_test_WinsOPSCA <- cor.test(teams$W,teams$OPSCA,method="pearson")
+Teams_test_WinsOPSCA
+
+Teams_test_WinsHR <- cor.test(teams$W,teams$HR,method="pearson")
+Teams_test_WinsHR
+
+Teams_test_WinsBA <- cor.test(teams$W,teams$BA,method="pearson")
+Teams_test_WinsBA
